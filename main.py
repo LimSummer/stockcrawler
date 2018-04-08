@@ -16,10 +16,14 @@ if __name__ == "__main__":
         print(headers)
         for row in f_csv:
             all_datas.insert(0,row)
-    
+    predatetime = None
     for data in all_datas:
         dtstr = date + ' ' + data[1]
         dt = datetime.strptime(dtstr, "%Y-%m-%d %H:%M:%S")
-        print(dt)
+        if predatetime is not None:
+            ndt = dt - predatetime
+            print(ndt.seconds)
+        predatetime = dt
+        print(data)
         #timestamp = time.mktime(data[1])
         #print(timestamp)
