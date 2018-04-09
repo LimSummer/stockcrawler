@@ -1,16 +1,32 @@
 #coding=utf-8
 import tushare as ts
-import csv,time,codecs
+import csv,time,codecs,getopt,sys
 from datetime import datetime
 from datetime import timedelta
+
+def getOptvalue(opt,name):
+    for opt, arg in opts:
+        if opt == name:
+            return arg
+def getBeforeData(code,cur_datetime):
+    r = 0
+    while r == 0:
+        delta = timedelta(days=-1)
+        yestoday_datetime = cur_datetime + delta
+        yestoday_str = yestoday_datetime.strftime('%Y-%m-%d')
+        df_yestoday = ts.get_k_data(sid,start=yestoday_str,end=yestoday_str)
+        r = df_yestoday.code.count()
+        if r != 0:
+            return df_yestoday
+        cur_datetime = yestoday_datetime
+#python main.py -s 603611 -d 2018-04-09
 if __name__ == "__main__":
-    sid='603611'
-    date='2018-04-04'
+    opts, args = getopt.getopt(sys.argv[1:],"s:d:",["sid=","date="])
+    sid = getOptvalue(opts,'-s')
+    date = getOptvalue(opts,'-d')
     cur_datetime = datetime.strptime(date, '%Y-%m-%d')
-    delta = timedelta(days=-1)
-    yestoday_datetime = cur_datetime + delta
-    yestoday_str = yestoday_datetime.strftime('%Y-%m-%d')
-    df_yestoday = ts.get_k_data(sid,start=yestoday_str,end=yestoday_str)
+    df_yestoday = getBeforeData(sid,cur_datetime)
+    print(df_yestoday)
     close_yestoday = float(df_yestoday.close)
     
     df = ts.get_tick_data(sid,date=date)
@@ -32,7 +48,7 @@ if __name__ == "__main__":
         price = float(data[2])
         if predatetime is not None:
             ndt = dt - predatetime
-            print(ndt.seconds)
+            #print(ndt.seconds)
         if prePrice == 0:
             dis = 0
         else:
