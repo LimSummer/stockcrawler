@@ -42,23 +42,30 @@ if __name__ == "__main__":
     predatetime = None
     prePrice = 0
     dis = 0
+    suList = []
     for data in all_datas:
         dtstr = date + ' ' + data[1]
         dt = datetime.strptime(dtstr, "%Y-%m-%d %H:%M:%S")
         price = float(data[2])
         if predatetime is not None:
             ndt = dt - predatetime
-            #print(ndt.seconds)
         if prePrice == 0:
             dis = 0
         else:
-            dis = round(price - prePrice,2)   
+            dis = round(price - prePrice,2)
+        if dis >= 0:
+            suList.append(data)
+        else:
+            print('------------------------')
+            for item in suList:
+                print(item)
+            suList = []   
         data.append(dis) 
         per = round(dis / close_yestoday * 100,2)
         data.append(per)
         predatetime = dt
         prePrice = price
-        print(data)
+        #print(data)
         #timestamp = time.mktime(data[1])
         #print(timestamp)
     
