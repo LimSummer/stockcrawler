@@ -2,10 +2,17 @@
 import tushare as ts
 import csv,time,codecs
 from datetime import datetime
-
+from datetime import timedelta
 if __name__ == "__main__":
     sid='603611'
     date='2018-04-04'
+    cur_datetime = datetime.strptime(date, '%Y-%m-%d')
+    delta = timedelta(days=-1)
+    yestoday_datetime = cur_datetime + delta
+    yestoday_str = yestoday_datetime.strftime('%Y-%m-%d')
+    df_yestoday = ts.get_k_data(sid,start=yestoday_str,end=yestoday_str)
+    close_yestoday = float(df_yestoday.close)
+    
     df = ts.get_tick_data(sid,date=date)
     filename = sid + ".csv" 
     df.to_csv(filename)
@@ -31,8 +38,11 @@ if __name__ == "__main__":
         else:
             dis = round(price - prePrice,2)   
         data.append(dis) 
+        per = round(dis / close_yestoday * 100,2)
+        data.append(per)
         predatetime = dt
         prePrice = price
         print(data)
         #timestamp = time.mktime(data[1])
         #print(timestamp)
+    
